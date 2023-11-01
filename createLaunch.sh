@@ -10,7 +10,7 @@ get_executable_from_cmake() {
 
 get_executable_from_makefile() {
   if [ -e Makefile ]; then
-    temp=$(grep -o '^\s*[^#]*:.*' Makefile | awk -F ':' '{print $1}' | awk '{print $1; exit}')
+    temp=$(awk -F ': ' '/^# The main all target$/{getline; while (getline) { if ($0 !~ /^\t/) break; } print $1 }' Makefile)
   fi
 }
 
@@ -30,7 +30,7 @@ else
     fi
 fi
 
-# Your JSON configuration
+#Simple JSON config
 result='{
     "version": "0.2.0",
     "configurations": [
