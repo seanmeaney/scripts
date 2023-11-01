@@ -13,10 +13,9 @@ get_executable_from_cmake() {
 # If argument provided, use that as the executable name
 if [ $# -eq 1 ]; then
     temp=$1
-else
-    # If no argument provided, check for CMakeLists.txt
+# If no argument provided, check for CMakeLists.txt and parse executable name
+else  
     get_executable_from_cmake
-
     if [ -z "$temp" ]; then
         echo "Error: No argument provided, and no executable name found in CMakeLists.txt or Makefile."
         exit 1
@@ -31,10 +30,10 @@ result='{
             "name": "C++ Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "'"\${workspaceFolder}/build/${temp}"'",
+            "program": "${workspaceFolder}/build/'"${temp}"'",
             "args": [],
             "environment": [{ "name": "config", "value": "Debug" }],
-            "cwd": "'"\${workspaceFolder}"'",
+            "cwd": "${workspaceFolder}",
             "linux": {
                 "MIMode": "gdb",
                 "miDebuggerPath": "/usr/bin/gdb"
