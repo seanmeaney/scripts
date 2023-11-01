@@ -2,27 +2,20 @@
 
 mkdir -p .vscode
 
+
 get_executable_from_cmake() {
   if [ -e CMakeLists.txt ]; then
-    temp=$(grep -o 'set(PROJ_NAME [^)]*)' CMakeLists.txt | sed 's/set(PROJ_NAME \([^)]*\))/\1/')
+    # Use awk to directly extract the executable name and remove "PROJ_NAME" part
+    temp=$(awk -F '[()]' '/set\(PROJ_NAME/ {sub(/PROJ_NAME /, "", $2); print $2; exit}' CMakeLists.txt)
   fi
 }
 
-get_executable_from_makefile() {
-  if [ -e Makefile ]; then
-    temp=$(awk -F ': ' '/^# The main all target$/{getline; while (getline) { if ($0 !~ /^\t/) break; } print $1 }' Makefile)
-  fi
-}
-
-# If argument provided then use that as executable name
+# If argument provided, use that as the executable name
 if [ $# -eq 1 ]; then
     temp=$1
 else
-    # If no argument provided, check for CMakeLists.txt and Makefile
+    # If no argument provided, check for CMakeLists.txt
     get_executable_from_cmake
-    if [ -z "$temp" ]; then
-        get_executable_from_makefile
-    fi
 
     if [ -z "$temp" ]; then
         echo "Error: No argument provided, and no executable name found in CMakeLists.txt or Makefile."
@@ -30,7 +23,7 @@ else
     fi
 fi
 
-#Simple JSON config
+# Simple JSON config
 result='{
     "version": "0.2.0",
     "configurations": [
